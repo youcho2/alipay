@@ -10,10 +10,10 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"io/ioutil"
 	"math"
 	"net/http"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -160,7 +160,7 @@ func (this *Client) LoadAppPublicCert(s string) error {
 
 // LoadAppPublicCertFromFile 加载应用公钥证书
 func (this *Client) LoadAppPublicCertFromFile(filename string) error {
-	b, err := os.ReadFile(filename)
+	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -190,7 +190,7 @@ func (this *Client) LoadAliPayPublicCert(s string) error {
 
 // LoadAliPayPublicCertFromFile 加载支付宝公钥证书
 func (this *Client) LoadAliPayPublicCertFromFile(filename string) error {
-	b, err := os.ReadFile(filename)
+	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -219,7 +219,7 @@ func (this *Client) LoadAliPayRootCert(s string) error {
 
 // LoadAliPayRootCertFromFile 加载支付宝根证书
 func (this *Client) LoadAliPayRootCertFromFile(filename string) error {
-	b, err := os.ReadFile(filename)
+	b, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		return err
@@ -302,7 +302,7 @@ func (this *Client) doRequest(method string, param Param, result interface{}) (e
 		return err
 	}
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
