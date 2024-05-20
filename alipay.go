@@ -13,9 +13,9 @@ import (
 	"github.com/smartwalle/ngx"
 	"github.com/smartwalle/nsign"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -236,14 +236,9 @@ func (c *Client) loadAppCertPublicKey(b []byte) error {
 	return nil
 }
 
-// LoadAppCertPublicKey 加载应用公钥证书
-func (c *Client) LoadAppCertPublicKey(s string) error {
-	return c.loadAppCertPublicKey([]byte(s))
-}
-
-// LoadAppCertPublicKeyFromFile 从文件加载应用公钥证书
-func (c *Client) LoadAppCertPublicKeyFromFile(filename string) error {
-	b, err := os.ReadFile(filename)
+// LoadAppPublicCertFromFile 加载应用公钥证书
+func (this *Client) LoadAppPublicCertFromFile(filename string) error {
+	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -282,14 +277,9 @@ func (c *Client) loadAlipayCertPublicKey(b []byte) error {
 	return nil
 }
 
-// LoadAlipayCertPublicKey 支付宝公钥证书
-func (c *Client) LoadAlipayCertPublicKey(s string) error {
-	return c.loadAlipayCertPublicKey([]byte(s))
-}
-
-// LoadAlipayCertPublicKeyFromFile 从文件支付宝公钥证书
-func (c *Client) LoadAlipayCertPublicKeyFromFile(filename string) error {
-	b, err := os.ReadFile(filename)
+// LoadAliPayPublicCertFromFile 加载支付宝公钥证书
+func (this *Client) LoadAliPayPublicCertFromFile(filename string) error {
+	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -313,8 +303,8 @@ func (c *Client) LoadAliPayRootCert(s string) error {
 }
 
 // LoadAliPayRootCertFromFile 加载支付宝根证书
-func (c *Client) LoadAliPayRootCertFromFile(filename string) error {
-	b, err := os.ReadFile(filename)
+func (this *Client) LoadAliPayRootCertFromFile(filename string) error {
+	b, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		return err
@@ -393,7 +383,7 @@ func (c *Client) doRequest(method string, param Param, result interface{}) (err 
 	}
 	defer rsp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(rsp.Body)
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		return err
 	}
