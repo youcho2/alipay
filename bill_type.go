@@ -2,23 +2,25 @@ package alipay
 
 // BillDownloadURLQuery 查询对账单下载地址接口请求参数 https://docs.open.alipay.com/api_15/alipay.data.dataservice.bill.downloadurl.query
 type BillDownloadURLQuery struct {
+	AuxParam
 	AppAuthToken string `json:"-"`         // 可选
 	BillType     string `json:"bill_type"` // 必选 账单类型，商户通过接口或商户经开放平台授权后其所属服务商通过接口可以获取以下账单类型：trade、signcustomer；trade指商户基于支付宝交易收单的业务账单；signcustomer是指基于商户支付宝余额收入及支出等资金变动的帐务账单。
 	BillDate     string `json:"bill_date"` // 必选 账单时间：日账单格式为yyyy-MM-dd，最早可下载2016年1月1日开始的日账单；月账单格式为yyyy-MM，最早可下载2016年1月开始的月账单。
 }
 
-func (this BillDownloadURLQuery) APIName() string {
+func (b BillDownloadURLQuery) APIName() string {
 	return "alipay.data.dataservice.bill.downloadurl.query"
 }
 
-func (this BillDownloadURLQuery) Params() map[string]string {
+func (b BillDownloadURLQuery) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = b.AppAuthToken
 	return m
 }
 
 // BillAccountLogQuery 查询账户账务明细接口请求参数 https://opendocs.alipay.com/apis/api_15/alipay.data.bill.accountlog.query
 type BillAccountLogQuery struct {
+	AuxParam
 	AppAuthToken         string `json:"-"`                      // 可选
 	StartTime            string `json:"start_time"`             // 账务流水创建时间的起始范围	2019-01-01 00:00:00
 	EndTime              string `json:"end_time"`               // 账务流水创建时间的结束范围。与起始时间间隔不超过31天。查询结果为起始时间至结束时间的左闭右开区间	2019-01-02 00:00:00
@@ -32,13 +34,13 @@ type BillAccountLogQuery struct {
 	BillUserId           string `json:"bill_user_id"`           // 可选 指定用户做账单查询	2088123456789012
 }
 
-func (this BillAccountLogQuery) APIName() string {
+func (b BillAccountLogQuery) APIName() string {
 	return "alipay.data.bill.accountlog.query"
 }
 
-func (this BillAccountLogQuery) Params() map[string]string {
+func (b BillAccountLogQuery) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = b.AppAuthToken
 	return m
 }
 
@@ -78,16 +80,17 @@ type BillDownloadURLQueryRsp struct {
 
 // BillBalanceQuery 支付宝商家账户当前余额查询 https://opendocs.alipay.com/apis/api_15/alipay.data.bill.balance.query
 type BillBalanceQuery struct {
+	AuxParam
 	AppAuthToken string `json:"-"` // 可选
 }
 
-func (this BillBalanceQuery) APIName() string {
+func (b BillBalanceQuery) APIName() string {
 	return "alipay.data.bill.balance.query"
 }
 
-func (this BillBalanceQuery) Params() map[string]string {
+func (b BillBalanceQuery) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = b.AppAuthToken
 	return m
 }
 

@@ -1,8 +1,12 @@
 package alipay
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Trade struct {
+	AuxParam
 	NotifyURL    string `json:"-"`
 	ReturnURL    string `json:"-"`
 	AppAuthToken string `json:"-"` // 可选
@@ -39,6 +43,7 @@ type Trade struct {
 }
 
 type SignParams struct {
+	ProductCode         string             `json:"product_code"`                 // 必选 商家和支付宝签约的产品码。 商家扣款产品传入固定值：GENERAL_WITHHOLDING
 	PersonalProductCode string             `json:"personal_product_code"`        // 必选 个人签约产品码，商户和支付宝签约时确定。
 	SignScene           string             `json:"sign_scene"`                   // 必选 协议签约场景，商户和支付宝签约时确定，商户可咨询技术支持。
 	ExternalAgreementNo string             `json:"external_agreement_no"`        // 可选 商户签约号，代扣协议中标示用户的唯一签约号（确保在商户系统中唯一）。 格式规则：支持大写小写字母和数字，最长32位。 商户系统按需传入，如果同一用户在同一产品码、同一签约场景下，签订了多份代扣协议，那么需要指定并传入该值。
@@ -79,15 +84,15 @@ type GoodsDetail struct {
 	ShowURL        string  `json:"show_url,omitempty"`
 }
 
-func (this TradePagePay) APIName() string {
+func (t TradePagePay) APIName() string {
 	return "alipay.trade.page.pay"
 }
 
-func (this TradePagePay) Params() map[string]string {
+func (t TradePagePay) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
-	m["return_url"] = this.ReturnURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
+	m["return_url"] = t.ReturnURL
 	return m
 }
 
@@ -102,6 +107,7 @@ const (
 
 // TradeQuery 统一收单线下交易查询接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.query/
 type TradeQuery struct {
+	AuxParam
 	AppAuthToken string   `json:"-"`                       // 可选
 	OutTradeNo   string   `json:"out_trade_no,omitempty"`  // 订单支付时传入的商户订单号, 与 TradeNo 二选一
 	TradeNo      string   `json:"trade_no,omitempty"`      // 支付宝交易号
@@ -109,13 +115,13 @@ type TradeQuery struct {
 	QueryOptions []string `json:"query_options,omitempty"` // 可选 查询选项，商户传入该参数可定制本接口同步响应额外返回的信息字段，数组格式。支持枚举如下：trade_settle_info：返回的交易结算信息，包含分账、补差等信息； fund_bill_list：交易支付使用的资金渠道；voucher_detail_list：交易支付时使用的所有优惠券信息；discount_goods_detail：交易支付所使用的单品券优惠的商品优惠信息；mdiscount_amount：商家优惠金额；
 }
 
-func (this TradeQuery) APIName() string {
+func (t TradeQuery) APIName() string {
 	return "alipay.trade.query"
 }
 
-func (this TradeQuery) Params() map[string]string {
+func (t TradeQuery) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = t.AppAuthToken
 	return m
 }
 
@@ -230,6 +236,7 @@ type TradeSettleDetail struct {
 
 // TradeClose 统一收单交易关闭接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.close/
 type TradeClose struct {
+	AuxParam
 	AppAuthToken string `json:"-"`                      // 可选
 	NotifyURL    string `json:"-"`                      // 可选
 	OutTradeNo   string `json:"out_trade_no,omitempty"` // 与 TradeNo 二选一
@@ -237,14 +244,14 @@ type TradeClose struct {
 	OperatorId   string `json:"operator_id,omitempty"`  // 可选
 }
 
-func (this TradeClose) APIName() string {
+func (t TradeClose) APIName() string {
 	return "alipay.trade.close"
 }
 
-func (this TradeClose) Params() map[string]string {
+func (t TradeClose) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
 }
 
@@ -257,6 +264,7 @@ type TradeCloseRsp struct {
 
 // TradeRefund 统一收单交易退款接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.refund/
 type TradeRefund struct {
+	AuxParam
 	AppAuthToken            string                    `json:"-"`                                   // 可选
 	OutTradeNo              string                    `json:"out_trade_no,omitempty"`              // 与 TradeNo 二选一
 	TradeNo                 string                    `json:"trade_no,omitempty"`                  // 与 OutTradeNo 二选一
@@ -270,13 +278,13 @@ type TradeRefund struct {
 	// TerminalId string `json:"terminal_id"` // 可选 商户的终端编号
 }
 
-func (this TradeRefund) APIName() string {
+func (t TradeRefund) APIName() string {
 	return "alipay.trade.refund"
 }
 
-func (this TradeRefund) Params() map[string]string {
+func (t TradeRefund) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = t.AppAuthToken
 	return m
 }
 
@@ -329,6 +337,7 @@ type RefundSubFeeDetail struct {
 
 // TradeFastPayRefundQuery 统一收单交易退款查询接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.fastpay.refund.query
 type TradeFastPayRefundQuery struct {
+	AuxParam
 	AppAuthToken string   `json:"-"`                       // 可选
 	OutTradeNo   string   `json:"out_trade_no,omitempty"`  // 与 TradeNo 二选一
 	TradeNo      string   `json:"trade_no,omitempty"`      // 与 OutTradeNo 二选一
@@ -336,13 +345,13 @@ type TradeFastPayRefundQuery struct {
 	QueryOptions []string `json:"query_options,omitempty"` // 可选 查询选项，商户通过上送该参数来定制同步需要额外返回的信息字段，数组格式。 refund_detail_item_list
 }
 
-func (this TradeFastPayRefundQuery) APIName() string {
+func (t TradeFastPayRefundQuery) APIName() string {
 	return "alipay.trade.fastpay.refund.query"
 }
 
-func (this TradeFastPayRefundQuery) Params() map[string]string {
+func (t TradeFastPayRefundQuery) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = t.AppAuthToken
 	return m
 }
 
@@ -384,6 +393,7 @@ type DepositBackInfo struct {
 
 // TradeOrderSettle 统一收单交易结算接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.order.settle
 type TradeOrderSettle struct {
+	AuxParam
 	AppAuthToken      string              `json:"-"`                  // 可选
 	OutRequestNo      string              `json:"out_request_no"`     // 必须 结算请求流水号 开发者自行生成并保证唯一性
 	TradeNo           string              `json:"trade_no"`           // 必须 支付宝订单号
@@ -391,13 +401,13 @@ type TradeOrderSettle struct {
 	OperatorId        string              `json:"operator_id"`        //可选 操作员id
 }
 
-func (this TradeOrderSettle) APIName() string {
+func (t TradeOrderSettle) APIName() string {
 	return "alipay.trade.order.settle"
 }
 
-func (this TradeOrderSettle) Params() map[string]string {
+func (t TradeOrderSettle) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = t.AppAuthToken
 	return m
 }
 
@@ -419,20 +429,22 @@ type TradeOrderSettleRsp struct {
 type TradeCreate struct {
 	Trade
 	DiscountableAmount string             `json:"discountable_amount"` // 可打折金额. 参与优惠计算的金额，单位为元，精确到小数点后两位
-	BuyerId            string             `json:"buyer_id"`
+	BuyerId            string             `json:"buyer_id"`            // 买家支付宝用户ID。 2088开头的16位纯数字，小程序场景下获取用户ID请参考：用户授权; 其它场景下获取用户ID请参考：网页授权获取用户信息; 注：交易的买家与卖家不能相同。
+	BuyerOpenId        string             `json:"buyer_open_id"`       // 新版接口无法获取user_id, 这里只能传递openid值
+	OpAppId            string             `json:"op_app_id,omitempty"` // 小程序支付中，商户实际经营主体的小程序应用的appid, 注意事项:商户需要先在产品管理中心绑定该小程序appid，否则下单会失败
 	GoodsDetail        []*GoodsDetailItem `json:"goods_detail,omitempty"`
 	OperatorId         string             `json:"operator_id"`
 	TerminalId         string             `json:"terminal_id"`
 }
 
-func (this TradeCreate) APIName() string {
+func (t TradeCreate) APIName() string {
 	return "alipay.trade.create"
 }
 
-func (this TradeCreate) Params() map[string]string {
+func (t TradeCreate) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
 }
 
@@ -502,14 +514,14 @@ type TradePay struct {
 	AgreementParams    *AgreementParams   `json:"agreement_params,omitempty"`
 }
 
-func (this TradePay) APIName() string {
+func (t TradePay) APIName() string {
 	return "alipay.trade.pay"
 }
 
-func (this TradePay) Params() map[string]string {
+func (t TradePay) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
 }
 
@@ -538,15 +550,19 @@ type TradeAppPay struct {
 	Trade
 }
 
-func (this TradeAppPay) APIName() string {
+func (t TradeAppPay) APIName() string {
 	return "alipay.trade.app.pay"
 }
 
-func (this TradeAppPay) Params() map[string]string {
+func (t TradeAppPay) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
+}
+
+func (t TradeAppPay) NeedEncrypt() bool {
+	return false
 }
 
 // TradePreCreate 统一收单线下交易预创建接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.precreate/
@@ -558,14 +574,14 @@ type TradePreCreate struct {
 	TerminalId         string             `json:"terminal_id"`            // 可选 商户机具终端编号
 }
 
-func (this TradePreCreate) APIName() string {
+func (t TradePreCreate) APIName() string {
 	return "alipay.trade.precreate"
 }
 
-func (this TradePreCreate) Params() map[string]string {
+func (t TradePreCreate) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
 }
 
@@ -578,6 +594,7 @@ type TradePreCreateRsp struct {
 
 // TradeCancel 统一收单交易撤销接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.cancel/
 type TradeCancel struct {
+	AuxParam
 	AppAuthToken string `json:"-"` // 可选
 	NotifyURL    string `json:"-"` // 可选
 
@@ -585,14 +602,14 @@ type TradeCancel struct {
 	TradeNo    string `json:"trade_no"`     // 支付宝交易号，和商户订单号不能同时为空
 }
 
-func (this TradeCancel) APIName() string {
+func (t TradeCancel) APIName() string {
 	return "alipay.trade.cancel"
 }
 
-func (this TradeCancel) Params() map[string]string {
+func (t TradeCancel) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
 }
 
@@ -607,6 +624,7 @@ type TradeCancelRsp struct {
 
 // TradeOrderInfoSync 支付宝订单信息同步接口请求参数 https://docs.open.alipay.com/api_1/alipay.trade.orderinfo.sync/
 type TradeOrderInfoSync struct {
+	AuxParam
 	AppAuthToken string `json:"-"`              // 可选
 	OutRequestNo string `json:"out_request_no"` // 必选 标识一笔交易多次请求，同一笔交易多次信息同步时需要保证唯一
 	BizType      string `json:"biz_type"`       // 必选 交易信息同步对应的业务类型，具体值与支付宝约定；信用授权场景下传CREDIT_AUTH
@@ -614,13 +632,13 @@ type TradeOrderInfoSync struct {
 	OrderBizInfo string `json:"order_biz_info"` // 可选 商户传入同步信息，具体值要和支付宝约定；用于芝麻信用租车、单次授权等信息同步场景，格式为json格式
 }
 
-func (this TradeOrderInfoSync) APIName() string {
+func (t TradeOrderInfoSync) APIName() string {
 	return "alipay.trade.orderinfo.sync"
 }
 
-func (this TradeOrderInfoSync) Params() map[string]string {
+func (t TradeOrderInfoSync) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = t.AppAuthToken
 	return m
 }
 
@@ -634,6 +652,7 @@ type TradeOrderInfoSyncRsp struct {
 
 // TradeMergePreCreate 统一收单合并支付预创建接口请求参数 https://opendocs.alipay.com/open/028xr9
 type TradeMergePreCreate struct {
+	AuxParam
 	NotifyURL    string `json:"-"` // 可选
 	AppAuthToken string `json:"-"` // 可选
 
@@ -643,14 +662,14 @@ type TradeMergePreCreate struct {
 	OrderDetails   []*OrderDetail `json:"order_details"`   // 必选 子订单详情
 }
 
-func (this TradeMergePreCreate) APIName() string {
+func (t TradeMergePreCreate) APIName() string {
 	return "alipay.trade.merge.precreate"
 }
 
-func (this TradeMergePreCreate) Params() map[string]string {
+func (t TradeMergePreCreate) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
-	m["notify_url"] = this.NotifyURL
+	m["app_auth_token"] = t.AppAuthToken
+	m["notify_url"] = t.NotifyURL
 	return m
 }
 
@@ -672,12 +691,14 @@ type OrderDetail struct {
 }
 
 type ExtendParams struct {
-	SysServiceProviderId string `json:"sys_service_provider_id"` // 可选 系统商编号 该参数作为系统商返佣数据提取的依据，请填写系统商签约协议的PID
-	HBFQNum              string `json:"hb_fq_num"`               // 可选 使用花呗分期要进行的分期数
-	HBFQSellerPercent    string `json:"hb_fq_seller_percent"`    // 可选 使用花呗分期需要卖家承担的手续费比例的百分值，传入100代表100%
-	IndustryRefluxInfo   string `json:"industry_reflux_info"`    // 可选 行业数据回流信息, 详见：地铁支付接口参数补充说明
-	CardType             string `json:"card_type"`               // 可选 卡类型
-	SpecifiedSellerName  string `json:"specified_seller_name"`   // 可选 特殊场景下，允许商户指定交易展示的卖家名称
+	SysServiceProviderId  string `json:"sys_service_provider_id"`  // 可选 系统商编号 该参数作为系统商返佣数据提取的依据，请填写系统商签约协议的PID
+	HBFQNum               string `json:"hb_fq_num"`                // 可选 使用花呗分期要进行的分期数
+	HBFQSellerPercent     string `json:"hb_fq_seller_percent"`     // 可选 使用花呗分期需要卖家承担的手续费比例的百分值，传入100代表100%
+	IndustryRefluxInfo    string `json:"industry_reflux_info"`     // 可选 行业数据回流信息, 详见：地铁支付接口参数补充说明
+	CardType              string `json:"card_type"`                // 可选 卡类型
+	SpecifiedSellerName   string `json:"specified_seller_name"`    // 可选 特殊场景下，允许商户指定交易展示的卖家名称
+	OrigTotalAmount       string `json:"orig_total_amount"`        // 可选 外部订单金额。
+	TradeComponentOrderId string `json:"trade_component_order_id"` // 可选 公域商品交易业务订单ID
 }
 
 type Merchant struct {
@@ -716,16 +737,195 @@ type PreOrderResult struct {
 
 // TradeAppMergePay App合并支付接口 https://opendocs.alipay.com/open/028py8
 type TradeAppMergePay struct {
+	AuxParam
 	AppAuthToken string `json:"-"`            // 可选
 	PreOrderNo   string `json:"pre_order_no"` // 必选 预下单号。通过 alipay.trade.merge.precreate(统一收单合并支付预创建接口)返回。
 }
 
-func (this TradeAppMergePay) APIName() string {
+func (t TradeAppMergePay) APIName() string {
 	return "alipay.trade.app.merge.pay"
 }
 
-func (this TradeAppMergePay) Params() map[string]string {
+func (t TradeAppMergePay) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = t.AppAuthToken
 	return m
+}
+
+// OpenMiniOrderCreate 小程序交易组件创建订单 https://opendocs.alipay.com/mini/54f80876_alipay.open.mini.order.create
+type OpenMiniOrderCreate struct {
+	AuxParam
+	AppAuthToken            string                      `json:"-"`                                   // 可选
+	OutOrderID              string                      `json:"out_order_id"`                        // 商户订单号，必选
+	Title                   string                      `json:"title"`                               // 订单标题，必选
+	SourceID                string                      `json:"source_id"`                           // 追踪ID，必选
+	MerchantBizType         string                      `json:"merchant_biz_type"`                   // 订单类型，必选
+	Path                    string                      `json:"path"`                                // 商家小程序对应的订单详情页路径地址，必选
+	OrderDetail             MiniOrderDetailDTO          `json:"order_detail"`                        // 订单信息，必选
+	SellerID                string                      `json:"seller_id"`                           // 商家小程序对应的卖家ID，必选
+	BuyerID                 string                      `json:"buyer_id"`                            // 用户ID，
+	BuyerLonginID           string                      `json:"buyer_longin_id"`                     // 用户登录ID，可选
+	TimeoutExpress          string                      `json:"timeout_express"`                     // 订单过期时间，可选
+	PromoDetailInfo         *PromoDetailInfoDTO         `json:"promo_detail_info"`                   // 营销信息，可选
+	DeliveryDetail          *LogisticsInfoDTO           `json:"delivery_detail"`                     // 物流信息，可选
+	DefaultReceivingAddress *MiniReceiverAddressInfoDTO `json:"default_receiving_address,omitempty"` // 默认退货地址，可选
+}
+
+// MiniOrderDetailDTO 定义订单详细信息的结构体
+type MiniOrderDetailDTO struct {
+	ItemInfos []MiniGoodsDetailInfoDTO `json:"item_infos"` // 商品详细信息，必选
+	PriceInfo PriceInfoDTO             `json:"price_info"` // 价格信息，必选
+}
+
+// MiniGoodsDetailInfoDTO 定义商品详细信息的结构体
+type MiniGoodsDetailInfoDTO struct {
+	GoodsName           string                  `json:"goods_name"`                // 商品名称，必选
+	ItemCnt             string                  `json:"item_cnt"`                  // 商品数量，必选
+	SalePrice           string                  `json:"sale_price"`                // 商品单价，必选
+	GoodsID             string                  `json:"goods_id"`                  // 商品的编号，必选
+	OutItemID           string                  `json:"out_item_id"`               // 商户商品ID，条件必选
+	OutSkuID            string                  `json:"out_sku_id"`                // 商户商品sku_id，条件必选
+	SaleRealPrice       string                  `json:"sale_real_price"`           // 商品实际单价，条件必选
+	ItemDiscount        string                  `json:"item_discount"`             // 商家商品优惠金额，条件必选
+	ImageMaterialID     string                  `json:"image_material_id"`         // 商家商品素材ID，条件必选
+	ItemInstallmentInfo *ItemInstallmentInfoDTO `json:"item_installment_info"`     // 商品分期信息，条件必选
+	RentInfo            *RentInfoDTO            `json:"rent_info,omitempty"`       // 租金信息，租赁商品特有,可选
+	EffectiveDates      *EffectiveDatesDTO      `json:"effective_dates,omitempty"` // 价格日历,可选
+	TicketInfo          *TicketInfoDTO          `json:"ticket_info,omitempty"`     // 演出票务信息,可选
+	ActivityInfo        *ActivityInfoDTO        `json:"activity_info,omitempty"`   // 活动信息,可选
+}
+
+// ItemInstallmentInfoDTO 定义商品分期信息的结构体
+type ItemInstallmentInfoDTO struct {
+	PeriodNum      int     `json:"period_num"`                 // 总分期数，必选
+	PeriodMaxPrice *string `json:"period_max_price,omitempty"` // 每期最大金额，可选
+	PeriodPrice    *string `json:"period_price,omitempty"`     // 每期金额，可选
+}
+
+// RentInfoDTO 定义租金信息的结构体
+type RentInfoDTO struct {
+	InitialRentPrice    string    `json:"initial_rent_price"`               // 首期租金，条件必选
+	PeriodRealRentPrice string    `json:"period_real_rent_price"`           // 每期租金，条件必选
+	PeriodNum           int       `json:"period_num"`                       // 期数，条件必选
+	BuyoutPrice         string    `json:"buyout_price"`                     // 买断价，条件必选
+	AddonPeriodNum      string    `json:"addon_period_num"`                 // 续租总期数，条件必选
+	AddonRealRentPrice  string    `json:"addon_real_rent_price"`            // 续租总金额，条件必选
+	RentStartTime       time.Time `json:"rent_start_time"`                  // 租期开始时间，条件必选
+	RentEndTime         time.Time `json:"rent_end_time"`                    // 租期结束时间，条件必选
+	FinishRealRentPrice *string   `json:"finish_real_rent_price,omitempty"` // 尾期租金，可选
+	DepositPrice        *string   `json:"deposit_price,omitempty"`          // 押金金额，可选
+}
+
+// EffectiveDatesDTO 定义价格日历的结构体
+type EffectiveDatesDTO struct {
+	Date  string `json:"date"`  // 价格日期，可选
+	Price string `json:"price"` // 商品单价，可选
+}
+
+// TicketInfoDTO 定义演出票务信息的结构体
+type TicketInfoDTO struct {
+	TicketID         string    `json:"ticket_id"`         // 票编码ID，必选
+	TicketType       string    `json:"ticket_type"`       // 票类型，必选
+	EventID          string    `json:"event_id"`          // 场次ID，必选
+	EventName        string    `json:"event_name"`        // 场次名称，必选
+	EventStartTime   time.Time `json:"event_start_time"`  // 场次开始时间，必选
+	LocationName     string    `json:"location_name"`     // 演出位置，必选
+	City             string    `json:"city"`              // 演出城市，必选
+	TicketLink       string    `json:"ticket_link"`       // 票据链接，可选
+	EventEndTime     time.Time `json:"event_end_time"`    // 场次结束时间，可选
+	PerformanceSeats string    `json:"performance_seats"` // 演出座位号，可选
+}
+
+// ActivityInfoDTO 定义活动信息的结构体
+type ActivityInfoDTO struct {
+	ActivityID   string    `json:"activity_id"`   // 活动ID，必选
+	ActivityName string    `json:"activity_name"` // 活动名称，必选
+	LocationName string    `json:"location_name"` // 活动地点，必选
+	City         string    `json:"city"`          // 活动所在的城市名，必选
+	StartTime    time.Time `json:"start_time"`    // 活动开始时间，可选
+	EndTime      time.Time `json:"end_time"`      // 活动结束时间，可选
+	Link         string    `json:"link"`          // 活动票链接，可选
+}
+
+// PriceInfoDTO 定义价格详细信息的结构体
+type PriceInfoDTO struct {
+	OrderPrice         string `json:"order_price"`          // 订单总价，必选
+	Freight            string `json:"freight"`              // 运费，可选
+	DiscountedPrice    string `json:"discounted_price"`     // 商家优惠金额，可选
+	MerchantValuePrice string `json:"merchant_value_price"` // 商家储值金额，可选
+}
+
+// ShopInfoDTO 定义门店信息的结构体
+type ShopInfoDTO struct {
+	Name           string `json:"name"`                       // 门店名称，必选
+	Address        string `json:"address"`                    // 门店地址，必选
+	MerchantShopID string `json:"merchant_shop_id,omitempty"` // 商家侧门店id，可选
+	AlipayShopID   string `json:"alipay_shop_id,omitempty"`   // 蚂蚁侧门店id，可选
+}
+
+// CreditInfoDTO 定义芝麻信用信息的结构体
+type CreditInfoDTO struct {
+	ZmServiceID    string `json:"zm_service_id"`    // 信用服务ID，必选
+	OutAgreementNo string `json:"out_agreement_no"` // 商户外部协议号，必选
+}
+
+// SubMerchantDTO 定义二级商户信息的结构体
+type SubMerchantDTO struct {
+	MerchantID   string `json:"merchant_id"`             // 二级商户编号，必选
+	MerchantType string `json:"merchant_type,omitempty"` // 二级商户编号类型，可选
+}
+
+// ContactInfoDTO 定义买家联系人信息的结构体
+type ContactInfoDTO struct {
+	PhoneNumber string `json:"phone_number,omitempty"` // 联系人手机号，可选
+	ContactName string `json:"contact_name,omitempty"` // 联系人姓名，可选
+}
+
+// MiniReceiverAddressInfoDTO 定义订单收货地址的结构体
+type MiniReceiverAddressInfoDTO struct {
+	ReceiverName         string `json:"receiver_name"`                    // 收货人姓名，必选
+	DetailedAddress      string `json:"detailed_address"`                 // 收货地址信息，必选
+	TelNumber            string `json:"tel_number"`                       // 收货人手机号，必选
+	ReceiverZip          string `json:"receiver_zip,omitempty"`           // 收货邮编地址，可选
+	ReceiverDivisionCode string `json:"receiver_division_code,omitempty"` // 标准城市域码，可选
+}
+
+// PromoDetailInfoDTO 定义订单优惠信息的结构体
+type PromoDetailInfoDTO struct {
+	ActivityConsultID string `json:"activity_consult_id,omitempty"` // 优惠活动咨询ID，可选
+}
+
+// MiniOrderExtInfoDTO 定义订单扩展字段的结构体
+type MiniOrderExtInfoDTO struct {
+	DoorTime                time.Time `json:"door_time,omitempty"`                  // 预约上门取件时间，可选
+	OrderStr                string    `json:"order_str"`                            // 芝麻租赁授权签名，条件必选
+	OrderTradeType          string    `json:"order_trade_type"`                     // 订单交易类型，条件必选
+	TradeNo                 string    `json:"trade_no"`                             // 交易号，条件必选
+	AdditionRebateBasePrice *string   `json:"addition_rebate_base_price,omitempty"` // 订单附加返佣金额基数，可选
+	DeductSignScene         string    `json:"deduct_sign_scene,omitempty"`          // 代扣协议签约场景，可选
+}
+
+// LogisticsInfoDTO 定义物流信息的结构体
+type LogisticsInfoDTO struct {
+	DeliveryType string    `json:"delivery_type,omitempty"` // 物流类型，可选
+	DeliveryTime time.Time `json:"delivery_time,omitempty"` // 配送时间，可选
+}
+
+func (t OpenMiniOrderCreate) APIName() string {
+	return "alipay.open.mini.order.create"
+}
+
+func (t OpenMiniOrderCreate) Params() map[string]string {
+	var m = make(map[string]string)
+	m["app_auth_token"] = t.AppAuthToken
+	return m
+}
+
+type OpenMiniOrderCreateResponse struct {
+	Error
+	Code       string `json:"code"`
+	Msg        string `json:"msg"`
+	OrderID    string `json:"order_id"`
+	OutOrderID string `json:"out_order_id"`
+	Sign       string `json:"sign"`
 }

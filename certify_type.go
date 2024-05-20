@@ -11,6 +11,7 @@ const (
 
 // UserCertifyOpenInitialize 身份认证初始化服务接口请求参数 https://docs.open.alipay.com/api_2/alipay.user.certify.open.initialize
 type UserCertifyOpenInitialize struct {
+	AuxParam
 	AppAuthToken        string         `json:"-"`                               // 可选
 	OuterOrderNo        string         `json:"outer_order_no"`                  // 必选  商户请求的唯一标识，商户要保证其唯一性，值为32位长度的字母数字组合。建议：前面几位字符是商户自定义的简称，中间可以使用一段时间，后段可以使用一个随机或递增序列
 	BizCode             CertifyBizCode `json:"biz_code"`                        // 必选 认证场景码。入参支持的认证场景码和商户签约的认证场景相关，取值如下: FACE：多因子人脸认证 CERT_PHOTO：多因子证照认证 CERT_PHOTO_FACE ：多因子证照和人脸认证 SMART_FACE：多因子快捷认证
@@ -30,13 +31,13 @@ type MerchantConfig struct {
 	ReturnURL string `json:"return_url"`
 }
 
-func (this UserCertifyOpenInitialize) APIName() string {
+func (u UserCertifyOpenInitialize) APIName() string {
 	return "alipay.user.certify.open.initialize"
 }
 
-func (this UserCertifyOpenInitialize) Params() map[string]string {
+func (u UserCertifyOpenInitialize) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = u.AppAuthToken
 	return m
 }
 
@@ -48,17 +49,18 @@ type UserCertifyOpenInitializeRsp struct {
 
 // UserCertifyOpenCertify 身份认证开始认证接口请求参数 https://docs.open.alipay.com/api_2/alipay.user.certify.open.certify
 type UserCertifyOpenCertify struct {
+	AuxParam
 	AppAuthToken string `json:"-"`          // 可选
 	CertifyId    string `json:"certify_id"` // 必选 本次申请操作的唯一标识，由开放认证初始化接口调用后生成，后续的操作都需要用到
 }
 
-func (this UserCertifyOpenCertify) APIName() string {
+func (u UserCertifyOpenCertify) APIName() string {
 	return "alipay.user.certify.open.certify"
 }
 
-func (this UserCertifyOpenCertify) Params() map[string]string {
+func (u UserCertifyOpenCertify) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = u.AppAuthToken
 	return m
 }
 
@@ -69,17 +71,18 @@ type UserCertifyOpenCertifyRsp struct {
 
 // UserCertifyOpenQuery 身份认证记录查询接口请求参数 https://docs.open.alipay.com/api_2/alipay.user.certify.open.query/
 type UserCertifyOpenQuery struct {
+	AuxParam
 	AppAuthToken string `json:"-"`          // 可选
 	CertifyId    string `json:"certify_id"` // 必选 本次申请操作的唯一标识，由开放认证初始化接口调用后生成，后续的操作都需要用到
 }
 
-func (this UserCertifyOpenQuery) APIName() string {
+func (u UserCertifyOpenQuery) APIName() string {
 	return "alipay.user.certify.open.query"
 }
 
-func (this UserCertifyOpenQuery) Params() map[string]string {
+func (u UserCertifyOpenQuery) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = u.AppAuthToken
 	return m
 }
 
@@ -93,6 +96,7 @@ type UserCertifyOpenQueryRsp struct {
 
 // UserCertDocCertVerifyPreConsult 实名证件信息比对验证预咨询接口请求参数 https://opendocs.alipay.com/apis/api_2/alipay.user.certdoc.certverify.preconsult
 type UserCertDocCertVerifyPreConsult struct {
+	AuxParam
 	AppAuthToken string                 `json:"-"`         // 可选
 	UserName     string                 `json:"user_name"` // 真实姓名
 	CertType     string                 `json:"cert_type"` // 证件类型。暂仅支持 IDENTITY_CARD （身份证）。	ID
@@ -102,13 +106,13 @@ type UserCertDocCertVerifyPreConsult struct {
 	ExtInfo      map[string]interface{} `json:"ext_info"`  // 拓展字段,JSON格式 可选
 }
 
-func (this UserCertDocCertVerifyPreConsult) APIName() string {
+func (u UserCertDocCertVerifyPreConsult) APIName() string {
 	return "alipay.user.certdoc.certverify.preconsult"
 }
 
-func (this UserCertDocCertVerifyPreConsult) Params() map[string]string {
+func (u UserCertDocCertVerifyPreConsult) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = u.AppAuthToken
 	return m
 }
 
@@ -120,17 +124,20 @@ type UserCertDocCertVerifyPreConsultRsp struct {
 
 // UserCertDocCertVerifyConsult 实名证件信息比对验证咨询接口请求参数 https://opendocs.alipay.com/apis/api_2/alipay.user.certdoc.certverify.consult
 type UserCertDocCertVerifyConsult struct {
+	AuxParam
 	AppAuthToken string `json:"-"`         // 可选
+	AuthToken    string `json:"-"`         // 必选
 	VerifyId     string `json:"verify_id"` // 信息校验验证ID。通过alipay.user.certdoc.certverify.preconsult(实名证件信息比对验证预咨询)接口获取
 }
 
-func (this UserCertDocCertVerifyConsult) APIName() string {
+func (u UserCertDocCertVerifyConsult) APIName() string {
 	return "alipay.user.certdoc.certverify.consult"
 }
 
-func (this UserCertDocCertVerifyConsult) Params() map[string]string {
+func (u UserCertDocCertVerifyConsult) Params() map[string]string {
 	var m = make(map[string]string)
-	m["app_auth_token"] = this.AppAuthToken
+	m["app_auth_token"] = u.AppAuthToken
+	m["auth_token"] = u.AuthToken
 	return m
 }
 
