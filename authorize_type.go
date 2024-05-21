@@ -39,6 +39,7 @@ func (this SystemOauthToken) Params() map[string]string {
 type SystemOauthTokenRsp struct {
 	Error
 	UserId       string `json:"user_id"`
+	OpenId       string `json:"open_id"`
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int64  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
@@ -68,6 +69,8 @@ type UserInfoShareRsp struct {
 	Error
 	AuthNo             string `json:"auth_no"`
 	UserId             string `json:"user_id"`
+	OpenId             string `json:"open_id"`
+	UnionId            string `json:"union_id"`
 	Avatar             string `json:"avatar"`
 	Province           string `json:"province"`
 	City               string `json:"city"`
@@ -115,6 +118,7 @@ type OpenAuthToken struct {
 	ExpiresIn       int64  `json:"expires_in"`        // 令牌有效期
 	ReExpiresIn     int64  `json:"re_expires_in"`     // 有效期
 	UserId          string `json:"user_id"`           // 支付宝用户标识
+	OpenId          string `json:"open_id"`
 }
 
 // OpenAuthTokenAppQuery 查询某个应用授权AppAuthToken的授权信息 https://opendocs.alipay.com/isv/04hgcp?pathHash=7ea21afe
@@ -133,6 +137,7 @@ func (this OpenAuthTokenAppQuery) Params() map[string]string {
 type OpenAuthTokenAppQueryRsp struct {
 	Error
 	UserId      string   `json:"user_id"`
+	OpenId      string   `json:"open_id"`
 	AuthAppId   string   `json:"auth_app_id"`
 	ExpiresIn   int64    `json:"expires_in"`
 	AuthMethods []string `json:"auth_methods"`

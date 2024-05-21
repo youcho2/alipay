@@ -3,6 +3,7 @@ package alipay
 import (
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -45,7 +46,7 @@ func (this *Client) NotifyVerify(partnerId, notifyId string) bool {
 	}
 	defer rsp.Body.Close()
 
-	data, err := io.ReadAll(rsp.Body)
+	data, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		return false
 	}
